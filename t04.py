@@ -13,7 +13,7 @@ import cv2
 import yaml
 
 
-model = YOLO("yolo11n.pt")
+DeepModel = YOLO("yolo11n.pt")
 
 
 ikco_models = ["206", "207", "405","rd", "pars", "2008", "508", "301", "samand", "soren", "dena", "runna", "tara", "haima", "arisun"]
@@ -40,25 +40,25 @@ driver = webdriver.Chrome(service=service, options=options)
 
 url = "https://divar.ir/s/tehran-province/car"
 driver.get(url)
-# time.sleep(5) 
-
-# for _ in range(3):
-#     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-#     time.sleep(3)
-
-ads = driver.find_elements(By.CLASS_NAME, "kt-post-card__action")
+time.sleep(5) 
 
 ad_links = []
-for ad in ads:
-    try:
-        # ad_link = ad.find_element(By.TAG_NAME, "a").get_attribute("href")
-        ad_link = ad.get_attribute("href")
-        ad_title = ad.find_element(By.CLASS_NAME, "kt-post-card__title").text.strip()
-        if not ad_link.startswith("https"):
-            ad_link = "https://divar.ir" + ad_link
-        ad_links.append(ad_link)
-    except:
-        continue
+
+for _ in range(5):
+    ads = driver.find_elements(By.CLASS_NAME, "kt-post-card__action")
+
+    for ad in ads:
+        try:
+            # ad_link = ad.find_element(By.TAG_NAME, "a").get_attribute("href")
+            ad_link = ad.get_attribute("href")
+            ad_title = ad.find_element(By.CLASS_NAME, "kt-post-card__title").text.strip()
+            if not ad_link.startswith("https"):
+                ad_link = "https://divar.ir" + ad_link
+            ad_links.append(ad_link)
+        except:
+            continue
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(3)
 print(len(ad_links))
 output_dir = "dataset"
 os.makedirs(output_dir, exist_ok=True)
@@ -72,59 +72,55 @@ for idx, ad_link in enumerate(ad_links):
         if "mapimage" in image_url:
             print("map image ignored")
             continue 
-        title = driver.find_element(By.CLASS_NAME, "kt-page-title__title").text.strip().split(' ') 
-        modelitem1 = driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").text.strip().split(' ') 
-        modelItems = urlparse(driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").get_attribute("href") ).path.split("/")  
-        
-        # if (modelItems[4]!='other'):
-        #     modell = " "
-        #     if any(modelItems[4] in model  for model in interestCars):
-        #         modell=f"{modelItems[4]}"
+        titlePersian = driver.find_element(By.CLASS_NAME, "kt-page-title__title").text.strip().split(' ') 
+        modelItemsPersian = driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").text.strip().split(' ') 
+        modelItemsEnglish = urlparse(driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").get_attribute("href") ).path.split("/")  
+        status_div = driver.find_element(By.XPATH, "//p[@class='kt-base-row__title kt-unexpandable-row__title' and text()='وضعیت بدنه']")
+        value_text = status_div.find_element(By.XPATH, "./../../div[@class='kt-base-row__end kt-unexpandable-row__value-box']/p").text.strip()
 
-        #     elif any(modelItems[5] in model for model in interestCars):
-        #         modell=f"{modelItems[5]}"
-        detected_model = None
-        if modelItems[4] != 'other':
+        if value_text == "تصادفی":
+            print("Ignoring this ad (تصادفی found).")
+            continue
+
+        if modelItemsEnglish[len(modelItemsEnglish)-2] != 'other':
             for model in car_classes.keys():
-                if model in modelItems[4] or model in modelItems[5]:
+                if model in modelItemsEnglish[4] or model in modelItemsEnglish[5]:
                     detected_model = model
-                    break
-        if detected_model and any(item in modelitem1 for item in title):
-            # if modell != " " :
-            #     if any(item in modelitem1 for item in title):
-                    print(f"Model: {modelitem1} | modelitem1: {modelitem1}")
-                    image_filename = os.path.join(output_dir, f"{modell}_{idx}.jpg")
-                    urllib.request.urlretrieve(image_url, image_filename)
                     
-                    results = model(image_filename)
+                    if any(item in modelItemsPersian for item in titlePersian):
+                                print(f"Model: {modelItemsPersian} | modelitem1: {titlePersian}")
+                                image_filename = os.path.join(output_dir, f"{detected_model}_{idx}.jpg")
+                                urllib.request.urlretrieve(image_url, image_filename)
+                                
+                                results = DeepModel(image_filename)
 
 
-                    for result in results:
-                        detected_image = result.plot()  
-                        height, width, _ = detected_image.shape
-                        filtered_boxes = [
-                                box for box in result.boxes 
-                                if int(box.cls[0].item()) == 2 
-                                and box.conf[0].item() > 0.4
-                                and (box.xywh[0][2] * box.xywh[0][3]) > 0.21 * (width * height) 
-                            ]
-                        if filtered_boxes:
-                            best_box = max(filtered_boxes, key=lambda b: b.conf[0].item())
-                            result.boxes = [best_box] 
-                            detected_image = result.plot()  
+                                for result in results:
+                                    detected_image = result.plot()  
+                                    height, width, _ = detected_image.shape
+                                    filtered_boxes = [
+                                            box for box in result.boxes 
+                                            if int(box.cls[0].item()) == 2 
+                                            and box.conf[0].item() > 0.4
+                                            and (box.xywh[0][2] * box.xywh[0][3]) > 0.21 * (width * height) 
+                                        ]
+                                    if filtered_boxes:
+                                        best_box = max(filtered_boxes, key=lambda b: b.conf[0].item())
+                                        result.boxes = [best_box] 
+                                        detected_image = result.plot()  
 
-                            output_image_path = os.path.join(output_dir, f"detected_{image_filename}")
-                            os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
+                                        output_image_path = os.path.join(output_dir, f"detected_{image_filename}")
+                                        os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
 
-                            cv2.imwrite(output_image_path, detected_image)
+                                        cv2.imwrite(output_image_path, detected_image)
 
 
-                            with open(f"{image_filename.split('.')[0]}.txt", "w") as f:
-                                x_center, y_center, width, height = best_box.xywhn[0]
-                                # class_id = int(best_box.cls[0].item())
-                                class_id = car_classes[detected_model]
-                                f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
-
+                                        with open(f"{image_filename.split('.')[0]}.txt", "w") as f:
+                                            x_center, y_center, width, height = best_box.xywhn[0]
+                                            # class_id = int(best_box.cls[0].item())
+                                            class_id = car_classes[detected_model]
+                                            f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
+                                        break
         yaml_path = os.path.join(output_dir, "customdata.yaml")
         with open(yaml_path, "w") as yaml_file:
             yaml.dump(dataset, yaml_file, default_flow_style=False, allow_unicode=True)
