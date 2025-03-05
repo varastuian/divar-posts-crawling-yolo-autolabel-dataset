@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from ultralytics import YOLO
 from PIL import Image
 import cv2
+import yaml
 
 
 model = YOLO("yolo11n.pt")
@@ -18,6 +19,17 @@ model = YOLO("yolo11n.pt")
 ikco_models = ["206", "207", "405","rd", "pars", "2008", "508", "301", "samand", "soren", "dena", "runna", "tara", "haima", "arisun"]
 saipa_models = ["saipa-shahin,pride", "tiba", "quick", "saina", "shahin", "zamyad", "roham", "padra", "151"]
 interestCars = ikco_models + saipa_models
+
+car_classes = {model: idx for idx, model in enumerate(interestCars)}
+dataset = {
+    "path": "/datasets",
+    "train": "train.txt",
+    "val": "val.txt",
+    "names": car_classes  
+}
+
+
+
 options = Options()
 # options.add_argument("--headless")  
 options.add_argument("--disable-blink-features=AutomationControlled")
@@ -58,22 +70,28 @@ for idx, ad_link in enumerate(ad_links):
 
         image_url = driver.find_element(By.CLASS_NAME, "kt-image-block__image").get_attribute("src")
         if "mapimage" in image_url:
+            print("map image ignored")
             continue 
         title = driver.find_element(By.CLASS_NAME, "kt-page-title__title").text.strip().split(' ') 
         modelitem1 = driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").text.strip().split(' ') 
-
-
         modelItems = urlparse(driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").get_attribute("href") ).path.split("/")  
-        if (modelItems[4]!='other'):
-            modell = " "
-            if any(modelItems[4] in model  for model in interestCars):
-                modell=f"{modelItems[4]}"
+        
+        # if (modelItems[4]!='other'):
+        #     modell = " "
+        #     if any(modelItems[4] in model  for model in interestCars):
+        #         modell=f"{modelItems[4]}"
 
-            elif any(modelItems[5] in model for model in interestCars):
-                modell=f"{modelItems[5]}"
-
-            if modell != " " :
-                if any(item in modelitem1 for item in title):
+        #     elif any(modelItems[5] in model for model in interestCars):
+        #         modell=f"{modelItems[5]}"
+        detected_model = None
+        if modelItems[4] != 'other':
+            for model in car_classes.keys():
+                if model in modelItems[4] or model in modelItems[5]:
+                    detected_model = model
+                    break
+        if detected_model and any(item in modelitem1 for item in title):
+            # if modell != " " :
+            #     if any(item in modelitem1 for item in title):
                     print(f"Model: {modelitem1} | modelitem1: {modelitem1}")
                     image_filename = os.path.join(output_dir, f"{modell}_{idx}.jpg")
                     urllib.request.urlretrieve(image_url, image_filename)
@@ -100,14 +118,16 @@ for idx, ad_link in enumerate(ad_links):
 
                             cv2.imwrite(output_image_path, detected_image)
 
-                            print(f"Saved: {output_image_path}")
 
                             with open(f"{image_filename.split('.')[0]}.txt", "w") as f:
                                 x_center, y_center, width, height = best_box.xywhn[0]
-                                class_id = int(best_box.cls[0].item())
+                                # class_id = int(best_box.cls[0].item())
+                                class_id = car_classes[detected_model]
                                 f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
 
-
+        yaml_path = os.path.join(output_dir, "customdata.yaml")
+        with open(yaml_path, "w") as yaml_file:
+            yaml.dump(dataset, yaml_file, default_flow_style=False, allow_unicode=True)
     except Exception as e:
         print(f"Error processing {e}")
 
