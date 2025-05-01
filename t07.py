@@ -339,7 +339,7 @@ for idx, ad_link in enumerate(unique_links):
 
                                     car_filename = os.path.join(output_car_dir, nameing+".txt")
 
-                                    with open(f"{image_filename.split('.')[0]}.txt", "w") as f:
+                                    with open(car_filename, "w") as f:
                                         x_center, y_center, width, height = largest_box.xywhn[0]
                                         class_id = car_classes[detected_model]
                                         f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
