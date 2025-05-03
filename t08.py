@@ -14,16 +14,17 @@ from ultralytics import YOLO
 import cv2
 import yaml
 
+import traceback
 
 # time.sleep(4 * 60 * 60)
 DeepModel = YOLO("yolo11n.pt")
-output_dir = f"dataset/dataset_{int(time.time())}"
+output_dir = f"dataset/dataset_santafe"
 os.makedirs(output_dir, exist_ok=True)
 
-output_car_dir = f"dataset/dataset_{int(time.time())}/car"
+output_car_dir = f"{output_dir}/car"
 os.makedirs(output_car_dir, exist_ok=True)
 
-output_color_dir = f"dataset/dataset_{int(time.time())}/color"
+output_color_dir = f"{output_dir}/color"
 os.makedirs(output_color_dir, exist_ok=True)
 car_classes = {
     "rira": 0, "206": 1, "207": 2, "405": 3, "pars": 4, "samand": 5, "dena": 6, "runna": 7, "tara": 8, "haima": 9, "arisun": 10,
@@ -216,11 +217,11 @@ options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=options)
-# driver.set_page_load_timeout(2) 
+driver.set_page_load_timeout(5) 
 
 
 try:
-    driver.get("https://divar.ir/s/iran/car/hyundai/elantra?cities=33%2C708%2C4%2C1737%2C1723%2C1747%2C1727%2C1750%2C1724%2C1725%2C1744%2C849%2C1745%2C1746%2C30%2C848%2C1749%2C1748%2C31%2C2200%2C2201%2C2202%2C2203%2C2204%2C2205%2C2206%2C2207%2C2208%2C2209%2C2210%2C2211%2C2212%2C2213%2C2214%2C2215%2C2216%2C2217%2C2218%2C2219%2C2220%2C2221%2C2222%2C2223%2C2224%2C2225%2C2226%2C2227%2C2228%2C2229%2C2230%2C2231%2C2232%2C2233%2C2234%2C2235%2C2236%2C2237%2C2238%2C2239%2C5%2C853%2C759%2C760%2C852%2C761%2C762%2C763%2C764%2C10%2C859%2C765%2C766%2C767%2C857%2C768%2C858%2C856%2C769%2C792%2C770%2C17%2C771%2C772%2C1741%2C1743%2C773%2C1742%2C2%2C1722%2C1721%2C1739%2C1740%2C850%2C1751%2C1738%2C1720%2C1753%2C1752%2C774%2C1754%2C1%2C1709%2C1715%2C1714%2C29%2C1764%2C1707%2C1768%2C1760%2C1767%2C1766%2C781%2C1718%2C782%2C783%2C1765%2C1769%2C1763%2C1713%2C1717%2C1759%2C1712%2C1710%2C1716%2C1772%2C1770%2C1758%2C1761%2C1708%2C1719%2C1706%2C1771%2C784%2C1711%2C1762")
+    driver.get("https://divar.ir/s/iran/car/hyundai/santafe-ix45?brand_model=Hyundai%20Santafe%20ix45%202400cc%2CHyundai%20Santafe%20ix45%202700cc%2CHyundai%20Santafe%20ix45%203500cc&cities=33%2C708%2C4%2C1737%2C1723%2C1747%2C1727%2C1750%2C1724%2C1725%2C1744%2C849%2C1745%2C1746%2C30%2C848%2C1749%2C1748%2C31%2C2200%2C2201%2C2202%2C2203%2C2204%2C2205%2C2206%2C2207%2C2208%2C2209%2C2210%2C2211%2C2212%2C2213%2C2214%2C2215%2C2216%2C2217%2C2218%2C2219%2C2220%2C2221%2C2222%2C2223%2C2224%2C2225%2C2226%2C2227%2C2228%2C2229%2C2230%2C2231%2C2232%2C2233%2C2234%2C2235%2C2236%2C2237%2C2238%2C2239%2C5%2C853%2C759%2C760%2C852%2C761%2C762%2C763%2C764%2C10%2C859%2C765%2C766%2C767%2C857%2C768%2C858%2C856%2C769%2C792%2C770%2C17%2C771%2C772%2C1741%2C1743%2C773%2C1742%2C2%2C1722%2C1721%2C1739%2C1740%2C850%2C1751%2C1738%2C1720%2C1753%2C1752%2C774%2C1754%2C1%2C1709%2C1715%2C1714%2C29%2C1764%2C1707%2C1768%2C1760%2C1767%2C1766%2C781%2C1718%2C782%2C783%2C1765%2C1769%2C1763%2C1713%2C1717%2C1759%2C1712%2C1710%2C1716%2C1772%2C1770%2C1758%2C1761%2C1708%2C1719%2C1706%2C1771%2C784%2C1711%2C1762")
 except:
     driver.execute_script("window.stop()") 
 time.sleep(2) 
@@ -229,7 +230,7 @@ wait = WebDriverWait(driver, 2)
 last_ad_count = 0 
 ad_links = []
 unique_links = set()
-while len(unique_links)<612:
+while len(unique_links)<912:
     time.sleep(2)
     ads = driver.find_elements(By.CLASS_NAME, "unsafe-kt-post-card__action")
     for ad in ads:
@@ -263,7 +264,9 @@ while len(unique_links)<612:
         # time.sleep(2) 
     except Exception as e:
         print(f"No button found. {len(unique_links)}.")
-        
+
+# unique_links.add("https://divar.ir/v/%D9%87%DB%8C%D9%88%D9%86%D8%AF%D8%A7%DB%8C-%D8%A7%D9%84%D9%86%D8%AA%D8%B1%D8%A7-1800cc-%D9%85%D8%AF%D9%84-%DB%B2%DB%B0%DB%B1%DB%B5-%D9%86%D9%82%D8%AF-%D9%88-%D8%A7%D9%82%D8%B3%D8%A7%D8%B7/wZ126B9h")
+    
 
 print(len(unique_links))
 for idx, ad_link in enumerate(unique_links):
@@ -307,23 +310,33 @@ for idx, ad_link in enumerate(unique_links):
                                                   
                         for i, img in enumerate(images):
                             img_url = img.get_attribute("src")
+                            if img_url is None:
+                                continue
+                            print("img_url",img_url)
                             nameing = f"{token}_{detected_model}_{i}_{timestamp}"
                             image_filename = os.path.join(output_dir,nameing+".jpg")
+                            car_filename = os.path.join(output_car_dir, nameing+".txt")
+                            color_filename = os.path.join(output_color_dir+'', nameing+".txt")
 
                             urllib.request.urlretrieve(img_url, image_filename)
+                            print(img_url)
+                            print(image_filename)
 
                             results = DeepModel(image_filename)
-                            rawImage = cv2.imread(image_filename)
+                            # rawImage = cv2.imread(image_filename)
                             for result in results:
                                 detected_image = result.plot()  
                                 height, width, _ = detected_image.shape
-                                if result.boxes:
+                                print("sag",len(result.boxes))
+
+                                if result.boxes and len(result.boxes) > 1:
+                                    print("sag")
+
                                     largest_box = max(result.boxes, key=lambda box: box.xywh[0][2] * box.xywh[0][3])
     
                                     cls_id = int(largest_box.cls[0].item())
                                     if cls_id in [2, 7] : 
                                 
-                                        car_filename = os.path.join(output_car_dir, nameing+".txt")
 
                                         with open(car_filename, "w") as f:
                                             x_center, y_center, width, height = largest_box.xywhn[0]
@@ -331,22 +344,38 @@ for idx, ad_link in enumerate(unique_links):
                                             f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
 
 
-                                        color_filename = os.path.join(output_color_dir+'', nameing+".txt")
 
                                         with open(color_filename, "w") as f:
                                             x_center, y_center, width, height = largest_box.xywhn[0]
                                             class_id = color_classes[color_label[0]]
                                             f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
-                                            
+                                        print("done")
                                         
                                     else:
-                                        print(f"Deleting {img_url}  ")
+                                        print(f"Deleting1 {img_url} {image_filename} {car_filename } {color_filename}  ")
 
                                         os.remove(image_filename)
-                                        os.remove(car_filename)
-                                        os.remove(color_filename)
+                                        # os.remove(car_filename)
+                                        # os.remove(color_filename)
+
+                                else:
+                                    print(f"Deleting2 {img_url} {image_filename} {car_filename } {color_filename}  ")
+
+                                    os.remove(image_filename)
+
+                                print('-'*50)
+
     except Exception as e:
         print(f"sag Error processing {e}")
+        traceback.print_exc()
+        print(f"Deleting3 {img_url} {image_filename} {car_filename } {color_filename}  ")
+
+        if os.path.exists(image_filename):
+            os.remove(image_filename)
+        if os.path.exists(car_filename):
+            os.remove(car_filename)
+        if os.path.exists(color_filename):
+            os.remove(color_filename)
         continue
 
 
