@@ -18,7 +18,7 @@ import traceback
 
 # time.sleep(4 * 60 * 60)
 DeepModel = YOLO("yolo11n.pt")
-output_dir = f"dataset/dataset_santafe"
+output_dir = f"dataset/dataset_koleos"
 os.makedirs(output_dir, exist_ok=True)
 
 output_car_dir = f"{output_dir}/car"
@@ -38,7 +38,7 @@ car_classes = {
     "tiggo-5": 62, "tiggo-7": 63, "fx": 64, "arizo-8": 65, "tiggo-7-pro": 66, "tiggo-8-pro": 67,
     "duster": 68, "fluence": 69, "koleos": 70, "sandero": 71, "megan": 72, "symbol": 73, "talisman": 74,
     "aurion": 75, "camry": 76, "corolla": 77, "prius": 78, "yaris": 79, "prado": 80, "landcruiser": 81,
-    "fidelity": 82, "dignity": 83, "lamari": 84
+    "fidelity": 82, "dignity": 83, "lamari": 84,"koleos":85
 }
 
 
@@ -51,75 +51,8 @@ color_classes = {
     "نارنجی": 34, "نقرآبی": 35, "نقره ای": 36, "نوک مدادی": 37, "یشمی": 38
 }
 
-# color_normalizer = {
-#     # 🔵 Blue variants
-#     "آبی": "آبی",
-#     "نقرآبی": "آبی",
-#     "اطلسی": "آبی",
-#     "سرمه‌ای": "آبی",
-
-#     # 🔴 Red variants
-#     "قرمز": "قرمز",
-#     "آلبالویی": "قرمز",
-#     "گیلاسی": "قرمز",
-#     "عنابی": "قرمز",
-
-#     # ⚫ Black variants
-#     "مشکی": "مشکی",
-#     "کربن بلک": "مشکی",
-
-#     # ⚪ White variants
-#     "سفید": "سفید",
-#     "سفید صدفی": "سفید",
-
-#     # ⚙️ Gray / Silver variants
-#     "نقره ای": "خاکستری",
-#     "تیتانیوم": "خاکستری",
-#     "تیتانیئم": "خاکستری",
-#     "خاکستری": "خاکستری",
-#     "دلفینی": "خاکستری",
-#     "ذغالی": "خاکستری",
-#     "نوک مدادی": "خاکستری",
-#     "سربی": "خاکستری",
-
-#     # 🟤 Brown variants
-#     "قهوه ای": "قهوه ای",
-#     "مسی": "قهوه ای",
-#     "موکا": "قهوه ای",
-
-#     # 🟡 Yellow/Gold variants
-#     "زرد": "زرد",
-#     "طلایی": "زرد",
-#     "زرد زرشکی": "زرد",
-
-#     # 🟢 Green variants
-#     "سبز": "سبز",
-#     "زیتونی": "سبز",
-#     "یشمی": "سبز",
-#     "خاکی": "سبز",
-
-#     # 🟠 Orange variants
-#     "نارنجی": "نارنجی",
-
-#     # 🟣 Purple variants
-#     "بنفش": "بنفش",
-#     "بادمجانی": "بنفش",
-
-#     # 🟡 Beige-like variants
-#     "بژ": "بژ",
-#     "کرم": "بژ",
-#     "پوست پیازی": "بژ",
-#     "عدسی": "بژ",
-
-#     # 🟤 Bronze-like
-#     "برنز": "قهوه ای",
-
-#     # 🌀 Other variants mapped loosely
-#     "طوسی": "خاکستری",
-# }
 
 color_normalizer = {
-    # Persian : (Base Persian Color, English Translation)
     "آبی": ("آبی", "Blue"),
     "نقرآبی": ("آبی", "Blue"),
     "اطلسی": ("آبی", "Blue"),
@@ -197,16 +130,6 @@ color_classes = {
     "سرمه‌ای": 13,
 }
 
-# dataset = {
-#     "path": "datasets",
-#     "train": "train",
-#     "val": "val",
-#     "names": interestCars  
-# }
-
-# yaml_path = os.path.join(output_dir, "customdata.yaml")
-# with open(yaml_path, "w") as yaml_file:
-#     yaml.dump(dataset, yaml_file, default_flow_style=False, allow_unicode=True, sort_keys=False) 
 
 options = Options()
 # options.add_argument("--headless")  
@@ -221,7 +144,7 @@ driver.set_page_load_timeout(5)
 
 
 try:
-    driver.get("https://divar.ir/s/iran/car/hyundai/santafe-ix45?brand_model=Hyundai%20Santafe%20ix45%202400cc%2CHyundai%20Santafe%20ix45%202700cc%2CHyundai%20Santafe%20ix45%203500cc&cities=33%2C708%2C4%2C1737%2C1723%2C1747%2C1727%2C1750%2C1724%2C1725%2C1744%2C849%2C1745%2C1746%2C30%2C848%2C1749%2C1748%2C31%2C2200%2C2201%2C2202%2C2203%2C2204%2C2205%2C2206%2C2207%2C2208%2C2209%2C2210%2C2211%2C2212%2C2213%2C2214%2C2215%2C2216%2C2217%2C2218%2C2219%2C2220%2C2221%2C2222%2C2223%2C2224%2C2225%2C2226%2C2227%2C2228%2C2229%2C2230%2C2231%2C2232%2C2233%2C2234%2C2235%2C2236%2C2237%2C2238%2C2239%2C5%2C853%2C759%2C760%2C852%2C761%2C762%2C763%2C764%2C10%2C859%2C765%2C766%2C767%2C857%2C768%2C858%2C856%2C769%2C792%2C770%2C17%2C771%2C772%2C1741%2C1743%2C773%2C1742%2C2%2C1722%2C1721%2C1739%2C1740%2C850%2C1751%2C1738%2C1720%2C1753%2C1752%2C774%2C1754%2C1%2C1709%2C1715%2C1714%2C29%2C1764%2C1707%2C1768%2C1760%2C1767%2C1766%2C781%2C1718%2C782%2C783%2C1765%2C1769%2C1763%2C1713%2C1717%2C1759%2C1712%2C1710%2C1716%2C1772%2C1770%2C1758%2C1761%2C1708%2C1719%2C1706%2C1771%2C784%2C1711%2C1762")
+    driver.get("url")
 except:
     driver.execute_script("window.stop()") 
 time.sleep(2) 
@@ -272,7 +195,6 @@ print(len(unique_links))
 for idx, ad_link in enumerate(unique_links):
 
     try:
-        # driver.get(ad_link)
         try:
             driver.get(ad_link)
 
@@ -294,7 +216,6 @@ for idx, ad_link in enumerate(unique_links):
         value_text = driver.find_element(By.XPATH, "//div[p[text()='بدنه']]/following-sibling::div//div[contains(@class, 'kt-score-row__score')]").text
         if "تصادفی" in value_text:
             continue
-        # Detect car model                            
         detected_model = None
         if len(modelItemsEnglish) > 2 and modelItemsEnglish[-2] != 'other':
             for model in car_classes.keys():
@@ -323,7 +244,6 @@ for idx, ad_link in enumerate(unique_links):
                             print(image_filename)
 
                             results = DeepModel(image_filename)
-                            # rawImage = cv2.imread(image_filename)
                             for result in results:
                                 detected_image = result.plot()  
                                 height, width, _ = detected_image.shape
@@ -355,8 +275,6 @@ for idx, ad_link in enumerate(unique_links):
                                         print(f"Deleting1 {img_url} {image_filename} {car_filename } {color_filename}  ")
 
                                         os.remove(image_filename)
-                                        # os.remove(car_filename)
-                                        # os.remove(color_filename)
 
                                 else:
                                     print(f"Deleting2 {img_url} {image_filename} {car_filename } {color_filename}  ")
