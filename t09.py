@@ -127,7 +127,7 @@ def save_label(filename, class_id, box):
     with open(filename, "w") as f:
         f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
 
-def get_ad_links(driver, expected_count=912):
+def get_ad_links(driver, expected_count=1912):
     wait = WebDriverWait(driver, 5)
     links = set()
     last_count = 0
@@ -169,8 +169,10 @@ def process_ad(driver, link, out_dir):
 
         model_items = urlparse(driver.find_element(By.CLASS_NAME, "kt-unexpandable-row__action").get_attribute("href")).path.split("/")
         detected_model = next(
-            (model for model in car_classes if model in model_items[4] 
-            or (len(model_items) > 5 and (
+            (model for model in car_classes if 
+            (len(model_items) > 4 and model in model_items[4] )
+            or 
+            (len(model_items) > 5 and (
                 model in model_items[5] or 
                 model in (model_items[4].replace('-ir', '') + model_items[5].replace('-ir', '')))
             )), 
@@ -220,7 +222,7 @@ def process_ad(driver, link, out_dir):
 
 
 if __name__ == "__main__":
-    url = "https://divar.ir/s/iran/car/renault/koleos?brand_model=Renault%20Koleos%20second%20generation%2CRenault%20Koleos%20first%20generation"
+    url = "https://divar.ir/s/iran/car/toyota/yaris-sedan?brand_model=Toyota%20Yaris%20Hatchback%2CToyota%20Yaris%20Sedan%201300cc%2CToyota%20Yaris%20Sedan%201500cc%2CToyota%20Yaris%20Hatchback%201500cc%2CToyota%20Yaris%20Hatchback%201300cc%2CToyota%20Yaris%20Hatchback%20Hybrid"
 
     model_name = urlparse(url).path.split('/')[-1]
 
