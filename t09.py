@@ -222,7 +222,7 @@ def process_ad(driver, link, out_dir):
 
 
 if __name__ == "__main__":
-    url = "https://divar.ir/s/iran/car/toyota/yaris-sedan?brand_model=Toyota%20Yaris%20Hatchback%2CToyota%20Yaris%20Sedan%201300cc%2CToyota%20Yaris%20Sedan%201500cc%2CToyota%20Yaris%20Hatchback%201500cc%2CToyota%20Yaris%20Hatchback%201300cc%2CToyota%20Yaris%20Hatchback%20Hybrid"
+    url = "https://divar.ir/s/iran/car/mvm/110s?brand_model=MVM%20110%2CMVM%20110%203%20cylinder%2CMVM%20110%20manual-4%20cylinder%2CMVM%20110S%20comfort%2CMVM%20110S%20luxury%2CMVM%20110%20automatic-4%20cylinder%2CMVM%20110S%20sport-luxury"
 
     model_name = urlparse(url).path.split('/')[-1]
 
