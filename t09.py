@@ -22,13 +22,13 @@ car_classes = {
     "paykan": 20, "rio": 21, "arizo": 22, "kmct9": 23, "mazdakara": 24, "changan": 25, "brilliance": 26, "mazda3": 27,
     "mvm110": 28, "mvm110s": 29, "mvm315": 30, "mvm530": 31, "mvm550": 32, "mvmx22": 33, "mvmx33": 34, "mvmx55": 35,
     "j5": 36, "j4": 37, "s5": 38, "s3": 39,
-    "lifan620": 40, "lifanx50": 41, "lifanx60": 42, "lifan520": 43, "lifan820": 44, "ifanx70": 45,
+    "lifan620": 40, "lifanx50": 41, "lifanx60": 42, "lifan520": 43, "lifan820": 44, "lifanx70": 45,
     "accent": 46, "avante": 47, "elantra": 48, "verna": 49, "azera-grandeur": 50, "sonata": 51, "tucson": 52, "santafe": 53, "i20": 54, "i30": 55, "i40": 56,
     "cerato": 57, "optima": 58, "sportage": 59, "sorento": 60, "carnival": 61,
     "tiggo-5": 62, "tiggo-7": 63, "fx": 64, "arizo-8": 65, "tiggo-7-pro": 66, "tiggo-8-pro": 67,
     "duster": 68, "fluence": 69, "koleos": 70, "sandero": 71, "megan": 72, "symbol": 73, "talisman": 74,
     "aurion": 75, "camry": 76, "corolla": 77, "prius": 78, "yaris": 79, "prado": 80, "landcruiser": 81,
-    "fidelity": 82, "dignity": 83, "lamari": 84, "koleos":85
+    "fidelity": 82, "dignity": 83, "lamari": 84
 }
 
 
@@ -222,7 +222,7 @@ def process_ad(driver, link, out_dir):
 
 
 if __name__ == "__main__":
-    url = "https://divar.ir/s/iran/car/mvm/110s?brand_model=MVM%20110%2CMVM%20110%203%20cylinder%2CMVM%20110%20manual-4%20cylinder%2CMVM%20110S%20comfort%2CMVM%20110S%20luxury%2CMVM%20110%20automatic-4%20cylinder%2CMVM%20110S%20sport-luxury"
+    url = "https://divar.ir/s/iran/car/mvm/x55?brand_model=MVM%20X55%20Pro%2CMVM%20X55%20Pro%20IE%2CMVM%20X55%20Pro%20IE%20Sport%2CMVM%20X55%20Pro%20Excellent-sport%2CMVM%20X55%20Pro%20Excellent%2CMVM%20X55%20Excellent%2CMVM%20X55%20Excellent-sport"
 
     model_name = urlparse(url).path.split('/')[-1]
 
@@ -237,6 +237,7 @@ if __name__ == "__main__":
 
         for i, ad_link in enumerate(links):
             process_ad(driver, ad_link, out_dir)
+            print(f"{i}/{len(links)} ")
 
     finally:
         driver.quit()
