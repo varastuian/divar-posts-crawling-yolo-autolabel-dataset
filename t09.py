@@ -222,22 +222,37 @@ def process_ad(driver, link, out_dir):
 
 
 if __name__ == "__main__":
-    url = "https://divar.ir/s/iran/car/mvm/x55?brand_model=MVM%20X55%20Pro%2CMVM%20X55%20Pro%20IE%2CMVM%20X55%20Pro%20IE%20Sport%2CMVM%20X55%20Pro%20Excellent-sport%2CMVM%20X55%20Pro%20Excellent%2CMVM%20X55%20Excellent%2CMVM%20X55%20Excellent-sport"
+    urls = [
+            'https://divar.ir/s/iran/car/jac/j4',
+            'https://divar.ir/s/iran/car/renault/megan?brand_model=Renault%20Megan-ir%2CRenault%20Megan-ir%202000cc%2CRenault%20Megan%202000cc%2CRenault%20Megan%201600cc%2CRenault%20Megan-ir%20E2-1600cc%2CRenault%20Megan-ir%20E1-1600cc%2CRenault%20Megan%20convertible%2CRenault%20Megan%20hatchback',
+            'https://divar.ir/s/iran/car/brilliance?brand_model=Brilliance%20H220%2CBrilliance%20H230%2CBrilliance%20H320%2CBrilliance%20H330%2CBrilliance%20C3%2CBrilliance%20Van%2CBrilliance%20H330%20automatic-1500cc%2CBrilliance%20H230%20manual%2CBrilliance%20H320%20automatic-1500cc%2CBrilliance%20H220%20manual%2CBrilliance%20H330%20manual-1500cc%2CBrilliance%20H320%20automatic-1650cc%2CBrilliance%20C3%20automatic-1650cc%2CBrilliance%20H230%20automatic%2CBrilliance%20H320%20manual-1500cc%2CBrilliance%20H330%20manual-1650cc%2CBrilliance%20H220%20automatic%2CBrilliance%20C3%20automatic-1500cc%2CBrilliance%20V5%2CBrilliance%20H320%20manual-1650cc%2CBrilliance%20Van%20H2L',
+            'https://divar.ir/s/iran/car/mazda/3-ir?brand_model=Mazda%203N%20Sedan-ir%2CMazda%203N%20Hatchback-ir%2CMazda%203-ir%203%2CMazda%203N%20Sedan-ir%204%2CMazda%203N%20Sedan-ir%203%2CMazda%203-ir%201%2CMazda%203N%20Hatchback-ir%203%2CMazda%203N%20Sedan-ir%201%2CMazda%203-ir%202%2CMazda%203N%20Sedan-ir%202%2CMazda%203N%20Hatchback-ir%201',
+            'https://divar.ir/s/iran/car/renault/koleos?brand_model=Renault%20Koleos%20second%20generation%2CRenault%20Koleos%20first%20generation%2CRenault%20Koleos%20New',
+            'https://divar.ir/s/iran/car/renault/duster?brand_model=Renault%20Duster%20SE%20Singledifferential%2CRenault%20Duster%20PE%20Singledifferential%2CRenault%20Duster%20SE%20doubledifferential%2CRenault%20Duster%20PE%20doubledifferential',
+            'https://divar.ir/s/iran/car/toyota/prius?brand_model=Toyota%20Prius%20C%2CToyota%20Prius%20B%2CToyota%20Prius%203%2CToyota%20Prius%20A%2CToyota%20Prius%202',
+            'https://divar.ir/s/iran/car/toyota/yaris-sedan?brand_model=Toyota%20Yaris%20Hatchback%2CToyota%20Yaris%20Sedan%201300cc%2CToyota%20Yaris%20Sedan%201500cc%2CToyota%20Yaris%20Hatchback%201300cc%2CToyota%20Yaris%20Hatchback%201500cc%2CToyota%20Yaris%20Hatchback%20Hybrid',
+            'https://divar.ir/s/iran/car/changan?brand_model=Changan%20CS%2055%2CChangan%20CS35-ir%2CChangan%20CS%2035%20%203%2CChangan%20EADO%2CChangan%20CS35%2CChangan%20Cs%2035%202%2CChangan%20Hunter%20Plus%20pick-up',
+            'https://divar.ir/s/iran/car/renault/fluence?brand_model=Renault%20Fluence%20manual%2CRenault%20Fluence%20E2%2CRenault%20Fluence%20E4'
 
-    model_name = urlparse(url).path.split('/')[-1]
+             ]
 
-    out_dir = f"dataset/dataset_{model_name}"
-    os.makedirs(out_dir, exist_ok=True)
+    for url in urls:
+        model_name = urlparse(url).path.split('/')[-1]
 
-    driver = setup_driver()
-    try:
-        driver.get(url)
-        links = get_ad_links(driver)
-        print(f"Collected {len(links)} ad links")
+        out_dir = f"dataset/dataset_{model_name}"
+        os.makedirs(out_dir, exist_ok=True)
 
-        for i, ad_link in enumerate(links):
-            process_ad(driver, ad_link, out_dir)
-            print(f"{i}/{len(links)} ")
+        driver = setup_driver()
+        try:
+            driver.get(url)
+            links = get_ad_links(driver)
+            print(f"Collected {len(links)} ad links")
 
-    finally:
-        driver.quit()
+            for i, ad_link in enumerate(links):
+                process_ad(driver, ad_link, out_dir)
+                print(f"{i}/{len(links)} ")
+        except Exception as e:
+            print(f"!!!!!!!!!!!!!!saggggggError loading URL {url}: {e}")
+                
+        finally:
+            driver.quit()
