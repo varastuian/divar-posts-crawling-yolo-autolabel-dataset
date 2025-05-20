@@ -222,7 +222,7 @@ def process_ad(driver, link, out_dir):
 
 
 if __name__ == "__main__":
-    url = "https://divar.ir/s/iran/car/mvm/110s?brand_model=MVM%20110%2CMVM%20110%203%20cylinder%2CMVM%20110%20manual-4%20cylinder%2CMVM%20110S%20comfort%2CMVM%20110S%20luxury%2CMVM%20110%20automatic-4%20cylinder%2CMVM%20110S%20sport-luxury"
+    url = "https://divar.ir/s/iran/car/changan?brand_model=Changan%20CS%2055%2CChangan%20CS35-ir%2CChangan%20CS%2035%20%203%2CChangan%20CS35%2CChangan%20EADO%2CChangan%20Cs%2035%202%2CChangan%20Hunter%20Plus%20pick-up"
 
     model_name = urlparse(url).path.split('/')[-1]
 
