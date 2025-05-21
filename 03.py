@@ -68,13 +68,13 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-dataset = SiameseDataset("Siamese data/405/pairs_405.csv", transform=transform)
+dataset = SiameseDataset("z:/pairs_all.csv", transform=transform)
 loader = DataLoader(dataset, shuffle=True, batch_size=32)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = SiameseNetwork().to(device)
 
-model_path = "siamese_model_405.pth"
+model_path = "siamese_model_1.pth"
 if os.path.exists(model_path):
     # --- Load Model ---
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -86,7 +86,7 @@ else:
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 
-    epochs = 10
+    epochs = 12
     for epoch in range(epochs):
         total_loss = 0
         for img1, img2, label in loader:
@@ -112,31 +112,32 @@ transform = transforms.Compose([
 ])
 
 # # --- Load Anchor (front-view reference image) ---
-# anchor_img = Image.open("Siamese data/front/AaAkqbfK_santafe_3_1746277695.jpg").convert("RGB")
-# anchor_tensor = transform(anchor_img).unsqueeze(0).to(device)
-# anchor_embedding = model.forward_once(anchor_tensor)
+# anchor_img = Image.open("Siamese data/405/front/AaYAWYvl_405_3_1746441644.jpg").convert("RGB")
+anchor_img = Image.open("z:/front/AaYcUJvb_405_1_1746441709.jpg").convert("RGB")
+anchor_tensor = transform(anchor_img).unsqueeze(0).to(device)
+anchor_embedding = model.forward_once(anchor_tensor)
 
-anchor_folder = "Siamese data/405/front"
-anchor_embeddings = []
+# anchor_folder = "Siamese data/405/front"
+# anchor_embeddings = []
 
-for fname in os.listdir(anchor_folder):
-    if not fname.lower().endswith(('.jpg', '.png')):
-        continue
-    img = Image.open(os.path.join(anchor_folder, fname)).convert("RGB")
-    img_tensor = transform(img).unsqueeze(0).to(device)
-    emb = model.forward_once(img_tensor)
-    anchor_embeddings.append(emb)
+# for fname in os.listdir(anchor_folder):
+#     if not fname.lower().endswith(('.jpg', '.png')):
+#         continue
+#     img = Image.open(os.path.join(anchor_folder, fname)).convert("RGB")
+#     img_tensor = transform(img).unsqueeze(0).to(device)
+#     emb = model.forward_once(img_tensor)
+#     anchor_embeddings.append(emb)
 
 # Stack and average
-anchor_embeddings = torch.cat(anchor_embeddings, dim=0)
+# anchor_embeddings = torch.cat(anchor_embeddings, dim=0)
 
 # --- Directory Setup ---
-input_folder = "dataset\dataset_405"
+input_folder = r"z:\dataset_fluence"
 unwanted_folder = os.path.join(input_folder, "unwanted")
 os.makedirs(unwanted_folder, exist_ok=True)
 
 # --- Threshold (adjust based on validation) ---
-threshold = 0.6
+threshold = 0.8
 front_count = 0
 rear_count = 0
 # --- Predict and move ---
@@ -149,7 +150,7 @@ for filename in os.listdir(input_folder):
     base = os.path.splitext(filename)[0]
     img_path = os.path.join(input_folder, filename)
     car_label_path = os.path.join(input_folder, base + ".txt")
-    color_label_path = os.path.join(input_folder, base + "_c.txt")
+    color_label_path = os.path.join(input_folder, base + "c.txt")
 
 
 
@@ -158,9 +159,9 @@ for filename in os.listdir(input_folder):
         img_tensor = transform(img).unsqueeze(0).to(device)
         img_embedding = model.forward_once(img_tensor)
 
-        # distance = torch.nn.functional.pairwise_distance(anchor_embedding, img_embedding).item()
-        distances = torch.nn.functional.pairwise_distance(anchor_embeddings, img_embedding.repeat(anchor_embeddings.size(0), 1))
-        min_distance = distances.min().item()
+        min_distance = torch.nn.functional.pairwise_distance(anchor_embedding, img_embedding).item()
+        # distances = torch.nn.functional.pairwise_distance(anchor_embeddings, img_embedding.repeat(anchor_embeddings.size(0), 1))
+        # min_distance = distances.min().item()
         if min_distance >= threshold:
             rear_count += 1
             print(f"{filename}: REAR (distance={min_distance:.2f})")

@@ -36,12 +36,12 @@ def generate_siamese_pairs(front_folder, other_folder, output_csv="pairs.csv", n
     df.to_csv(output_csv, index=False)
     print(f"✅ Dataset created: {output_csv} with {len(pairs)} pairs")
 
-# --- Usage ---
+
 if __name__ == "__main__":
     generate_siamese_pairs(
-        front_folder="Siamese data/405/front",
-        other_folder="Siamese data/405/other",
-        output_csv="Siamese data/405/pairs_405.csv",
-        num_positive=1000,
-        num_negative=1000
+        front_folder= r"z:\front",
+        other_folder=r"z:\other",
+        output_csv=r"z:\pairs_all.csv",
+        num_positive=2000,
+        num_negative=2000
     )
